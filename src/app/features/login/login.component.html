@@ -1,0 +1,45 @@
+<div class="relative h-screen w-full flex items-center justify-center overflow-hidden bg-[#050505]" dir="rtl">
+  
+  <div class="absolute inset-0 z-0">
+    <div class="absolute inset-0 bg-[url('assets/barbershop.jpg')] bg-cover bg-center grayscale-[0.5] opacity-40 blur-[8px] scale-110 animate-slow-pulse"></div>
+    
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_rgba(0,0,0,0.8)_100%)]"></div>
+  </div>
+
+  <div class="relative z-10 w-full max-w-[380px] p-12 bg-zinc-900/60 backdrop-blur-2xl border border-white/5 rounded-[30px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col items-center">
+    
+    <div class="mb-8 text-center">
+        <h1 class="text-5xl font-black text-yellow-500 tracking-tighter drop-shadow-lg">Kajwal</h1>
+        <div class="h-1 w-12 bg-yellow-500 mx-auto mt-2 rounded-full"></div>
+    </div>
+
+    <p class="text-zinc-400 text-sm mb-10 font-medium">مرحباً بك في صالون كاجوال</p>
+
+    <form (ngSubmit)="login()" class="w-full space-y-5">
+      <div class="group relative">
+        <span class="material-icons absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-yellow-500 transition-colors">person</span>
+        <input type="text" 
+               placeholder="اسم المستخدم" 
+               [(ngModel)]="username" name="username" required
+               class="w-full pr-12 pl-4 py-4 bg-zinc-950/50 border border-zinc-800 rounded-2xl text-white placeholder-zinc-600 outline-none focus:border-yellow-500/50 focus:ring-4 focus:ring-yellow-500/10 transition-all text-right" />
+      </div>
+
+      <div class="group relative">
+        <span class="material-icons absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-yellow-500 transition-colors">lock</span>
+        <input type="password" 
+               placeholder="كلمة المرور" 
+               [(ngModel)]="password" name="password" required
+               class="w-full pr-12 pl-4 py-4 bg-zinc-950/50 border border-zinc-800 rounded-2xl text-white placeholder-zinc-600 outline-none focus:border-yellow-500/50 focus:ring-4 focus:ring-yellow-500/10 transition-all text-right" />
+      </div>
+
+      <button type="submit" 
+              class="w-full py-4 mt-4 bg-yellow-500 hover:bg-yellow-400 text-black font-extrabold rounded-2xl shadow-xl shadow-yellow-500/10 active:scale-[0.98] transition-all duration-300">
+        تسجيل الدخول
+      </button>
+    </form>
+
+    <p *ngIf="error" class="mt-6 text-red-400 text-sm font-semibold">
+       {{ error }}
+    </p>
+  </div>
+</div>

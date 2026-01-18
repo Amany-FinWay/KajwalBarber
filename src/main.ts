@@ -1,6 +1,31 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { AppComponent } from './app/app.component';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
+import { routes } from './app/app.routes';
+import { provideToastr } from 'ngx-toastr';
+import { NgxSpinnerService } from 'ngx-spinner';
 
-bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+import { inject, provideAppInitializer } from '@angular/core';
+
+import { ConfigService } from './app/core/services/config.service';
+import { apiBaseUrlInterceptor } from './app/core/interceptors/api-base-url.interceptor';
+import { authInterceptor } from './app/core/interceptors/auth.interceptor';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideAnimations(),
+    provideToastr({ positionClass: 'toast-bottom-right' }),
+    { provide: NgxSpinnerService, useClass: NgxSpinnerService },
+    provideHttpClient(
+        withInterceptors([apiBaseUrlInterceptor, authInterceptor])
+    ),
+
+    provideRouter(routes),
+    provideAppInitializer(() => {
+        const configService = inject(ConfigService);
+        return configService.load();
+    }),
+  ],
+}).catch(console.error);

@@ -1,0 +1,28 @@
+<div class="flex flex-col h-full bg-black shadow-xl text-gray-200" dir="rtl">
+  <div class="p-6 flex items-center gap-3 border-b border-gray-800">
+    <img src="assets/barber-shop-logo.jpg" class="h-10 w-10 rounded-full" alt="Logo">
+    <span class="text-2xl font-extrabold tracking-wide text-yellow-400">Kajwal</span>
+  </div>
+
+  <nav class="flex-1 mt-6 space-y-2 px-4">
+    <a routerLink="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-900 transition">
+      <span class="material-icons text-yellow-400">dashboard</span>
+      <span class="font-semibold">لوحة التحكم</span>
+    </a>
+
+    <a routerLink="/barbers" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-900 transition">
+      <span class="material-icons text-yellow-400">content_cut</span>
+      <span class="font-semibold">الحلاقين</span>
+    </a>
+
+    <a routerLink="/packages" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-900 transition">
+      <span class="material-icons text-yellow-400">style</span>
+      <span class="font-semibold">الباقات</span>
+    </a>
+
+    <a routerLink="/bookings" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-900 transition">
+      <span class="material-icons text-yellow-400">calendar_today</span>
+      <span class="font-semibold">الحجوزات</span>
+    </a>
+  </nav>
+</div>
