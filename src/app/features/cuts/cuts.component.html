@@ -120,10 +120,50 @@
         </div>
       </div>
 
-      @if (isOpened(emp.employeeId)) {
-        <div class="p-4 space-y-3 flex-grow overflow-y-auto max-h-[400px] scrollbar-hide animate-fade-down animate-duration-200">
-           ...
+@if (isOpened(emp.employeeId)) {
+
+        <div class="p-4 space-y-3 flex-grow overflow-y-auto max-h-[400px] animate-fade-down animate-duration-200">
+
+          @for (cut of emp.cuts; track cut.cutId) {
+
+            <div class="bg-zinc-800/40 border border-white/[0.05] p-4 rounded-[1.5rem] flex justify-between items-center">
+
+              <div class="flex items-center gap-3">
+
+                <div class="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center text-yellow-500">
+
+                  <span class="material-icons text-sm">content_cut</span>
+
+                </div>
+
+                <div>
+
+                  <p class="text-sm font-bold text-zinc-200">{{ cut.serviceName }}</p>
+
+                  <p class="text-[10px] text-zinc-500">{{ cut.clientName || 'بدون اسم' }}</p>
+
+                </div>
+
+              </div>
+
+              <div class="text-left">
+
+                <p class="text-sm font-black text-white">{{ cut.price }} ج.م</p>
+
+                <p class="text-[9px] text-zinc-600 lowercase">{{ cut.time | date:'hh:mm a' : '' : 'ar' }}</p>
+
+              </div>
+
+            </div>
+
+          } @empty {
+
+             <div class="py-8 text-center text-zinc-600 text-sm italic">لا توجد عمليات مسجلة اليوم</div>
+
+          }
+
         </div>
+
       }
     </div>
   }
