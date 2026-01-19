@@ -10,5 +10,9 @@ import { RouterModule } from '@angular/router';
   styleUrl: './shell.component.css'
 })
 export class ShellComponent {
+  isSidebarCollapsed = false;
 
+  toggleSidebar() {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+  }
 }

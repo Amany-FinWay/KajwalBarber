@@ -35,14 +35,23 @@ export class CutsComponent implements OnInit {
     this.serviceForm = new FormGroup({
       employeeId: new FormControl(0, [Validators.required]),
       employeeName: new FormControl('', [Validators.required]),
-      serviceName: new FormControl('', [Validators.required]),
-      price: new FormControl(0, [Validators.required, Validators.min(0)]),
+      serviceName: new FormControl(''),
+      price: new FormControl('', [Validators.required, Validators.min(0)]),
       clientName: new FormControl(''),
       commission: new FormControl(null),
     });
     this.barberService
       .ListBarbers()
-      .subscribe((res: any) => (this.allBarbers = res.data));
+      .subscribe({
+        next: (res: any) => {
+          this.allBarbers = res.data
+        },error: (err) => {
+          this.spinnerToasterService.hideSpinner();
+          if(err.status == 401) {
+            this.router.navigate(['/login']);
+          }
+        }
+      });
   }
 
   getCuts() {
@@ -85,7 +94,6 @@ export class CutsComponent implements OnInit {
   }
 
   selectEmployee(emp: any) {
-    debugger;
     this.serviceForm.patchValue({
       employeeId: emp.id,
       employeeName: emp.name,
@@ -144,7 +152,7 @@ export class CutsComponent implements OnInit {
     this.spinnerToasterService.showSpinner();
     const cutData: CreateCut = {
       employeeId: empId,
-      serviceName: this.serviceForm.get('serviceName')?.value!,
+      serviceName: this.serviceForm.get('serviceName')?.value || 'غير محدد',
       price: this.serviceForm.get('price')?.value!,
       clientName: this.serviceForm.get('clientName')?.value || 'عميل مجهول',
       businessDate: new Date(this.getBusinessDate()),
@@ -152,6 +160,7 @@ export class CutsComponent implements OnInit {
 
     this.barberService.CreateCut(cutData).subscribe({
       next: (res) => {
+        this.getCuts();
         this.spinnerToasterService.showToaster(
           'success',
           'تم تسجيل العملية بنجاح',
@@ -167,6 +176,7 @@ export class CutsComponent implements OnInit {
         //this.allCuts.push(res);
         this.groupCutsByBarber(this.allCuts);
         this.spinnerToasterService.hideSpinner();
+        this.getCuts();
       },
       error: (err) => {
           this.spinnerToasterService.hideSpinner();
@@ -182,13 +192,34 @@ export class CutsComponent implements OnInit {
     });
   }
 
+  deleteCut(id: number) {
+    this.spinnerToasterService.showSpinner();
+    
+    this.barberService.DeleteCut(id).subscribe({
+      next: () => {
+        if (this.allCuts && this.allCuts.employees) {
+          this.allCuts.employees.forEach((employee: any) => {
+            employee.cuts = employee.cuts.filter((cut: any) => cut.cutId !== id);
+          });
+          this.allCuts.employees = this.allCuts.employees.filter(
+            (employee: any) => employee.cuts && employee.cuts.length > 0
+          );
+        }
+        this.groupCutsByBarber(this.allCuts);
+        this.spinnerToasterService.hideSpinner();
+        this.spinnerToasterService.showToaster('success', 'تم حذف العملية وتحديث الحسابات');
+      },
+      error: (err) => {
+        this.spinnerToasterService.hideSpinner();
+        this.spinnerToasterService.showToaster('error', 'حدث خطأ أثناء الحذف');
+      }
+    });
+  }
   get maxCutsCount(): number {
     return Math.max(...this.dailyGroups.map((e) => e.cuts.length));
   }
 
   toggleCard(empId: number) {
-    // إذا ضغطنا على الموظف المفتوح حالياً -> نقوم بتصفيره ليغلق
-    // إذا ضغطنا على موظف آخر -> نقوم بتغيير القيمة لاسمه الجديد فيفتح هو ويغلق القديم
     this.openedEmployeeId = this.openedEmployeeId === empId ? null : empId;
   }
 
@@ -197,15 +228,14 @@ export class CutsComponent implements OnInit {
   }
 
   groupCutsByBarber(apiResponse: any) {
-    // البيانات الآن تُعرض كما تأتي من الـ API مباشرة داخل الـ @for
     this.dailyGroups = apiResponse.employees || [];
 
-    // اختياري: ترتيب العمليات من الأحدث للأقدم داخل كل كارت
-    this.dailyGroups.forEach((emp) => {
-      emp.cuts?.sort(
-        (a: any, b: any) =>
-          new Date(b.time).getTime() - new Date(a.time).getTime(),
-      );
+    this.dailyGroups.forEach((emp: any) => {
+      emp.cuts?.sort((a: any, b: any) => new Date(b.time).getTime() - new Date(a.time).getTime());
+      emp.grossRevenue = emp.cuts?.reduce((sum: number, cut: any) => sum + (cut.price || 0), 0) || 0;
+      const commissionPercent = (emp.commissionRate || 2);
+      emp.commissionAmount = emp.grossRevenue * (commissionPercent / 100);
+      emp.netRevenue = emp.grossRevenue - emp.commissionAmount;
     });
   }
 }

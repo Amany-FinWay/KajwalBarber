@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -8,5 +8,11 @@ import { RouterLink } from '@angular/router';
   styleUrl: './sidebar.component.css'
 })
 export class SidebarComponent {
+  isSidebarCollapsed = false;
+  @Input() isCollapsed: boolean = false;
+  @Output() toggleEvent = new EventEmitter<void>();
 
+  onToggleClick() {
+    this.toggleEvent.emit();
+  }
 }

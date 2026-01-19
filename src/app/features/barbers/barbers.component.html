@@ -10,8 +10,13 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         @for (b of barbers; track b.id) {
-        <div
-            class="bg-zinc-900/40 backdrop-blur-md border border-white/5 p-6 rounded-[2rem] hover:bg-zinc-900/60 transition-all group relative">
+        <div class="bg-zinc-900/40 backdrop-blur-md border border-white/5 p-6 rounded-[2rem] hover:bg-zinc-900/60 transition-all group relative overflow-hidden">
+            
+            <button (click)="deleteBarber(b.id!)" 
+                    class="absolute top-4 left-4 p-2 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all duration-300 opacity-0 group-hover:opacity-100">
+                <span class="material-icons text-xl">delete_outline</span>
+            </button>
+
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-12 h-12 bg-yellow-500/10 rounded-full flex items-center justify-center text-yellow-500">
                     <span class="material-icons">content_cut</span>

@@ -11,20 +11,21 @@
   align-items: start !important;
 }
 
-/* لإخفاء الـ Scrollbar التقليدي واستخدام التصميم الجديد */
-.scrollbar-hide {
-  scrollbar-width: thin;
-  scrollbar-color: #eab308 rgba(255, 255, 255, 0.05);
+
+/* أجبري الكروت على البقاء في الخلفية مهما كان التنسيق */
+.grid.items-start {
+    isolation: isolate; /* ينشئ سياق تكديس جديد ومنفصل للكروت فقط */
+    z-index: 1;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  width: 5px;
+/* اجعلي القائمة تخرج خارج أي حدود */
+ul.absolute {
+    position: absolute !important;
+    display: block !important;
+    visibility: visible !important;
 }
-.scrollbar-hide::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-}
-.scrollbar-hide::-webkit-scrollbar-thumb {
-  background: #eab308;
-  border-radius: 10px;
+
+/* تحسين الظل للقائمة لتظهر بوضوح فوق الكروت الغامقة */
+.shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
 }

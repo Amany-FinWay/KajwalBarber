@@ -1,0 +1,5 @@
+/* في styles.css لضمان السلاسة */
+app-sidebar {
+  will-change: width;
+  white-space: nowrap; /* يمنع النصوص من النزول لسطر جديد أثناء حركة التصغير */
+}

@@ -75,4 +75,13 @@ export class BarbersComponent implements OnInit {
       });
     }
   }
+
+  deleteBarber(id: number) {
+    this.spinnerToasterService.showSpinner();
+    this.barberService.DeleteBarber(id).subscribe(() => {
+      this.barbers = this.barbers.filter(barber => barber.id !== id);
+      this.spinnerToasterService.hideSpinner();
+      this.spinnerToasterService.showToaster("success", "تم إزالة الحلاق بنجاح")
+    })
+  }
 }

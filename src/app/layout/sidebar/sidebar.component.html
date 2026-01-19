@@ -1,28 +1,42 @@
-<div class="flex flex-col h-full bg-black shadow-xl text-gray-200" dir="rtl">
-  <div class="p-6 flex items-center gap-3 border-b border-gray-800">
-    <img src="assets/barber-shop-logo.jpg" class="h-10 w-10 rounded-full" alt="Logo">
-    <span class="text-2xl font-extrabold tracking-wide text-yellow-400">Kajwal</span>
+<div class="flex flex-col h-full bg-black shadow-xl text-gray-200 transition-all duration-300" dir="rtl">
+  
+  <div class="p-6 flex items-center justify-between border-b border-gray-800 h-[89px]">
+    <div class="flex items-center gap-3 overflow-hidden">
+      <img src="assets/barber-shop-logo.jpg" class="h-10 w-10 rounded-full flex-none" alt="Logo">
+      @if (!isCollapsed) {
+        <span class="text-2xl font-extrabold tracking-wide text-yellow-400 animate-fade animate-duration-300">
+          Kajwal
+        </span>
+      }
+    </div>
+
+    <button (click)="onToggleClick()" 
+            class="text-yellow-400 hover:bg-gray-900 p-1 rounded-lg transition-colors">
+      <span class="material-icons">
+        {{ isCollapsed ? 'menu_open' : 'menu' }}
+      </span>
+    </button>
   </div>
 
   <nav class="flex-1 mt-6 space-y-2 px-4">
-    <a routerLink="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-900 transition">
-      <span class="material-icons text-yellow-400">dashboard</span>
-      <span class="font-semibold">لوحة التحكم</span>
+    <a routerLink="/dashboard" 
+       routerLinkActive="bg-gray-900 border-r-4 border-yellow-400"
+       class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-900 transition-all group"
+       [class.justify-center]="isCollapsed">
+      <span class="material-icons text-yellow-400 group-hover:scale-110 transition-transform">dashboard</span>
+      @if (!isCollapsed) {
+        <span class="font-semibold animate-fade animate-duration-300">لوحة التحكم</span>
+      }
     </a>
 
-    <a routerLink="/barbers" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-900 transition">
-      <span class="material-icons text-yellow-400">content_cut</span>
-      <span class="font-semibold">الحلاقين</span>
+    <a routerLink="/barbers" 
+       routerLinkActive="bg-gray-900 border-r-4 border-yellow-400"
+       class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-900 transition-all group"
+       [class.justify-center]="isCollapsed">
+      <span class="material-icons text-yellow-400 group-hover:scale-110 transition-transform">content_cut</span>
+      @if (!isCollapsed) {
+        <span class="font-semibold animate-fade animate-duration-300">الحلاقين</span>
+      }
     </a>
-
-    <!-- <a routerLink="/packages" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-900 transition">
-      <span class="material-icons text-yellow-400">style</span>
-      <span class="font-semibold">الباقات</span>
-    </a>
-
-    <a routerLink="/bookings" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-900 transition">
-      <span class="material-icons text-yellow-400">calendar_today</span>
-      <span class="font-semibold">الحجوزات</span>
-    </a> -->
   </nav>
 </div>
