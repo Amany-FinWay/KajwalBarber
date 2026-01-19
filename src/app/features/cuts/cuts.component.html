@@ -84,81 +84,50 @@
         </form>
     </div>
 
-<div class="overflow-x-auto mt-10 rounded-[2rem] border border-white/10 shadow-2xl" dir="rtl">
-  <table class="min-w-full text-sm text-center text-zinc-300">
-
-    <thead class="bg-zinc-900/90 backdrop-blur-md text-white">
-      <tr>
-        <th class="px-6 py-5 border-b border-white/10 text-right font-black text-yellow-500 bg-black/20">
-          البيانات
-        </th>
-        @for (emp of dailyGroups; track emp.employeeId) {
-          <th class="px-6 py-5 border-b border-white/10 font-black text-lg">
-            {{ emp.employeeName }}
-          </th>
-        }
-      </tr>
-    </thead>
-
-    <tbody class="bg-zinc-800/20">
-      @for (rowIndex of rowsArray; track rowIndex) {
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 items-start" dir="rtl">
+  @for (emp of dailyGroups; track emp.employeeId) {
+    <div class="bg-zinc-900/40 backdrop-blur-md rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl flex flex-col transition-all h-fit">
+      
+      <div (click)="toggleCard(emp.employeeId)" 
+           class="card-header-fixed p-6 bg-gradient-to-br from-zinc-800 to-zinc-900 border-b border-white/5 relative cursor-pointer active:scale-95 transition-transform flex-none">
         
-        <tr class="hover:bg-white/[0.02] transition-colors">
-          <td class="px-4 py-3 border-b border-white/5 text-right text-zinc-500 font-medium bg-black/10">
-            الخدمة ({{ rowIndex + 1 }})
-          </td>
-          @for (emp of dailyGroups; track emp.employeeId) {
-            <td class="px-4 py-3 border-b border-white/5 font-bold">
-              {{ emp.cuts[rowIndex]?.serviceName || '—' }}
-            </td>
-          }
-        </tr>
+        <div class="relative z-10 flex justify-between items-start">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-yellow-500 rounded-2xl flex items-center justify-center text-black font-black text-xl">
+              {{ emp.employeeName[0] }}
+            </div>
+            <div>
+              <h4 class="font-bold text-white text-lg">{{ emp.employeeName }}</h4>
+              <p class="text-[10px] text-zinc-500 uppercase">حلاق محترف</p>
+            </div>
+          </div>
+          
+          <span class="material-icons text-zinc-600 transition-transform duration-300"
+                [style.transform]="isOpened(emp.employeeId) ? 'rotate(180deg)' : 'rotate(0deg)'">
+            {{ isOpened(emp.employeeId) ? 'expand_less' : 'expand_more' }}
+          </span>
+        </div>
 
-        <tr class="hover:bg-white/[0.02] transition-colors">
-          <td class="px-4 py-3 border-b border-white/5 text-right text-zinc-500 bg-black/10">العميل</td>
-          @for (emp of dailyGroups; track emp.employeeId) {
-            <td class="px-4 py-3 border-b border-white/5 text-xs">
-              {{ emp.cuts[rowIndex]?.clientName || '—' }}
-            </td>
-          }
-        </tr>
+        <div class="relative z-10 grid grid-cols-2 gap-4 mt-6">
+          <div class="bg-black/30 p-3 rounded-2xl border border-white/5">
+            <p class="text-[9px] text-zinc-500 mb-1">صافي الربح</p>
+            <p class="text-xl font-black text-green-500">{{ emp.netRevenue | number:'1.0-2' }}</p>
+          </div>
+          <div class="bg-black/30 p-3 rounded-2xl border border-white/5">
+            <p class="text-[9px] text-zinc-500 mb-1">إجمالي الدخل</p>
+            <p class="text-xl font-black text-yellow-500">{{ emp.grossRevenue }}</p>
+          </div>
+        </div>
+      </div>
 
-        <tr class="border-b-2 border-zinc-900 hover:bg-white/[0.02] transition-colors">
-          <td class="px-4 py-3 text-right text-zinc-500 bg-black/10">السعر / الوقت</td>
-          @for (emp of dailyGroups; track emp.employeeId) {
-            <td class="px-4 py-3">
-              @if (emp.cuts[rowIndex]) {
-                <div class="flex flex-col">
-                  <span class="text-white font-black text-base">{{ emp.cuts[rowIndex].price }} ج.م</span>
-                  <span class="text-[9px] text-zinc-600 uppercase">{{ emp.cuts[rowIndex].time | date:'hh:mm a' : '' : 'ar' }}</span>
-                </div>
-              } @else { — }
-            </td>
-          }
-        </tr>
+      @if (isOpened(emp.employeeId)) {
+        <div class="p-4 space-y-3 flex-grow overflow-y-auto max-h-[400px] scrollbar-hide animate-fade-down animate-duration-200">
+           ...
+        </div>
       }
-
-      <tr class="bg-yellow-500/10 border-t-4 border-yellow-500/20">
-        <td class="px-4 py-4 text-right font-black text-yellow-500 bg-black/20 text-base">إجمالي الدخل</td>
-        @for (emp of dailyGroups; track emp.employeeId) {
-          <td class="px-4 py-4 font-black text-xl text-yellow-500">
-            {{ emp.grossRevenue }}
-          </td>
-        }
-      </tr>
-
-      <tr class="bg-green-500/5">
-        <td class="px-4 py-4 text-right font-black text-green-500 bg-black/20">صافي الحلاق</td>
-        @for (emp of dailyGroups; track emp.employeeId) {
-          <td class="px-4 py-4 font-black text-xl text-green-500">
-            {{ emp.netRevenue | number:'1.0-0' }}
-          </td>
-        }
-      </tr>
-    </tbody>
-  </table>
+    </div>
+  }
 </div>
-
 
 
     <!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">

@@ -4,6 +4,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { Barber } from '../../core/models/barber.model';
 import { BarberService } from '../../core/services/barber.service';
 import { SpinnerToasterService } from '../../core/services/spinner-toaster.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-barbers',
@@ -17,7 +18,8 @@ export class BarbersComponent implements OnInit {
 
   constructor(
     private barberService: BarberService,
-    private spinnerToasterService: SpinnerToasterService
+    private spinnerToasterService: SpinnerToasterService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -37,9 +39,11 @@ export class BarbersComponent implements OnInit {
       next: (res: any) => {
           this.spinnerToasterService.hideSpinner();
           this.barbers = res.data;
-          console.log(this.barbers);
-        },error: () => {
-
+        },error: (err) => {
+          this.spinnerToasterService.hideSpinner();
+          if(err.status == 401) {
+            this.router.navigate(['/login']);
+          }
         }
       
     });
@@ -62,8 +66,11 @@ export class BarbersComponent implements OnInit {
           this.showModal = false;
           this.barbers.push(barber);
           this.barberForm.reset();
-        },error: () => {
-
+        },error: (err) => {
+          this.spinnerToasterService.hideSpinner();
+          if(err.status == 401) {
+            this.router.navigate(['/login']);
+          }
         }
       });
     }

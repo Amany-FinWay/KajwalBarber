@@ -27,7 +27,6 @@ export class LoginComponent {
     this.spinnerToasterService.showSpinner();
     this.loginService.Login({email: this.username, password: this.password}).subscribe({
       next: (res: SuccessfulLogin) => {
-        console.log(res);
         this.spinnerToasterService.hideSpinner();
         this.spinnerToasterService.showToaster("success", "تم تسجيل الدخول بنجاح");
         localStorage.setItem('token', res.data.token);
@@ -35,9 +34,7 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       }, error: (err) => {
         this.spinnerToasterService.hideSpinner();
-        this.spinnerToasterService.showToaster("error", "فشل تسجيل الدخول, تأكد من صحة البيانات المدخلة");
-        console.log(err);
-        
+        this.spinnerToasterService.showToaster("error", "فشل تسجيل الدخول, تأكد من صحة البيانات المدخلة");        
       }
     })
   }

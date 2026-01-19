@@ -6,10 +6,11 @@ import { lastValueFrom } from 'rxjs';
 import { SpinnerToasterService } from '../../core/services/spinner-toaster.service';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { CreateCut, CutsList } from '../../core/models/cuts-list.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cuts',
-  imports: [ReactiveFormsModule, DatePipe, DecimalPipe, CommonModule],
+  imports: [ReactiveFormsModule, DecimalPipe, CommonModule],
   templateUrl: './cuts.component.html',
   styleUrl: './cuts.component.css',
 })
@@ -18,7 +19,7 @@ export class CutsComponent implements OnInit {
 
   allCuts!: CutsList;
   dailyGroups: any[] = [];
-  rowsArray: number[] = [];
+  openedEmployeeId: number | null = null;
   filteredEmployees: any[] = [];
   showEmployeeDropdown = false;
   serviceForm!: FormGroup;
@@ -26,6 +27,7 @@ export class CutsComponent implements OnInit {
   constructor(
     private barberService: BarberService,
     private spinnerToasterService: SpinnerToasterService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -38,12 +40,18 @@ export class CutsComponent implements OnInit {
       clientName: new FormControl(''),
       commission: new FormControl(null),
     });
-    this.barberService.ListBarbers().subscribe((res: any) => (this.allBarbers = res.data));
+    this.barberService
+      .ListBarbers()
+      .subscribe((res: any) => (this.allBarbers = res.data));
   }
 
   getCuts() {
-    this.spinnerToasterService.showSpinner()
-    this.barberService.CutList().subscribe((res: any) => {this.allCuts = res.data; this.groupCutsByBarber(this.allCuts); this.spinnerToasterService.hideSpinner()});
+    this.spinnerToasterService.showSpinner();
+    this.barberService.CutList().subscribe((res: any) => {
+      this.allCuts = res.data;
+      this.groupCutsByBarber(this.allCuts);
+      this.spinnerToasterService.hideSpinner();
+    });
   }
 
   onEmployeeInput(event: any) {
@@ -62,10 +70,13 @@ export class CutsComponent implements OnInit {
     if (found) {
       commissionControl.setValue(null);
       commissionControl.clearValidators();
-      this.serviceForm.patchValue({ employeeId: found.id }, { emitEvent: false });
+      this.serviceForm.patchValue(
+        { employeeId: found.id },
+        { emitEvent: false },
+      );
     } else {
       this.serviceForm.patchValue({ employeeId: 0 }, { emitEvent: false });
-      
+
       commissionControl.setValidators([Validators.required, Validators.min(0)]);
     }
 
@@ -74,14 +85,14 @@ export class CutsComponent implements OnInit {
   }
 
   selectEmployee(emp: any) {
-    debugger
+    debugger;
     this.serviceForm.patchValue({
       employeeId: emp.id,
       employeeName: emp.name,
     });
     this.showEmployeeDropdown = false;
     this.serviceForm.controls['commission'].clearValidators();
-    this.serviceForm.controls['commission'].updateValueAndValidity();;
+    this.serviceForm.controls['commission'].updateValueAndValidity();
     this.serviceForm.updateValueAndValidity();
   }
 
@@ -141,7 +152,10 @@ export class CutsComponent implements OnInit {
 
     this.barberService.CreateCut(cutData).subscribe({
       next: (res) => {
-        this.spinnerToasterService.showToaster("success", 'تم تسجيل العملية بنجاح');
+        this.spinnerToasterService.showToaster(
+          'success',
+          'تم تسجيل العملية بنجاح',
+        );
         this.serviceForm.reset({
           employeeId: 0,
           employeeName: '',
@@ -155,25 +169,43 @@ export class CutsComponent implements OnInit {
         this.spinnerToasterService.hideSpinner();
       },
       error: (err) => {
-        this.spinnerToasterService.hideSpinner();
-        this.spinnerToasterService.showToaster("error" ,'حدث خطأ أثناء حفظ العملية، حاول مرة أخرى');
-        console.error(err);
+          this.spinnerToasterService.hideSpinner();
+          if (err.status == 401) {
+            this.router.navigate(['/login']);
+          } else {
+            this.spinnerToasterService.showToaster(
+              'error',
+              'حدث خطأ أثناء حفظ العملية، حاول مرة أخرى',
+            );
+          }
       },
     });
   }
 
   get maxCutsCount(): number {
-    return Math.max(...this.dailyGroups.map(e => e.cuts.length));
+    return Math.max(...this.dailyGroups.map((e) => e.cuts.length));
+  }
+
+  toggleCard(empId: number) {
+    // إذا ضغطنا على الموظف المفتوح حالياً -> نقوم بتصفيره ليغلق
+    // إذا ضغطنا على موظف آخر -> نقوم بتغيير القيمة لاسمه الجديد فيفتح هو ويغلق القديم
+    this.openedEmployeeId = this.openedEmployeeId === empId ? null : empId;
+  }
+
+  isOpened(empId: number): boolean {
+    return this.openedEmployeeId === empId;
   }
 
   groupCutsByBarber(apiResponse: any) {
-    const employees = apiResponse.employees || [];
-    this.dailyGroups = employees;
+    // البيانات الآن تُعرض كما تأتي من الـ API مباشرة داخل الـ @for
+    this.dailyGroups = apiResponse.employees || [];
 
-    // حساب أقصى عدد عمليات عند أي حلاق لتحديد عدد صفوف الجدول
-    const maxCuts = Math.max(...employees.map((e: any) => e.cuts?.length || 0), 0);
-    
-    // تحويل الرقم لمصفوفة [0, 1, 2, ...] عشان الـ @for يشتغل
-    this.rowsArray = Array.from({ length: maxCuts }, (_, i) => i);
+    // اختياري: ترتيب العمليات من الأحدث للأقدم داخل كل كارت
+    this.dailyGroups.forEach((emp) => {
+      emp.cuts?.sort(
+        (a: any, b: any) =>
+          new Date(b.time).getTime() - new Date(a.time).getTime(),
+      );
+    });
   }
 }
