@@ -25,7 +25,11 @@ export class BarberService {
     return this.httpClient.post('/api/cuts/create', cut);
   }
 
-  public CutList(dateTime: any): Observable<CutsList>{
+  public CutList(): Observable<CutsList>{
+    return this.httpClient.post<CutsList>('/api/cuts/get-today-business', {})
+  }
+
+  public CutListOnDay(dateTime: any): Observable<CutsList>{
     return this.httpClient.post<CutsList>(`${'/api/cuts/get-business-day?date='}${dateTime}`, {})
   }
 }

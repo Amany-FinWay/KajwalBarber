@@ -4,12 +4,12 @@ import { Barber } from '../../core/models/barber.model';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
 import { SpinnerToasterService } from '../../core/services/spinner-toaster.service';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { CreateCut, CutsList } from '../../core/models/cuts-list.model';
 
 @Component({
   selector: 'app-cuts',
-  imports: [ReactiveFormsModule, DatePipe, DecimalPipe],
+  imports: [ReactiveFormsModule, DatePipe, DecimalPipe, CommonModule],
   templateUrl: './cuts.component.html',
   styleUrl: './cuts.component.css',
 })
@@ -18,7 +18,7 @@ export class CutsComponent implements OnInit {
 
   allCuts!: CutsList;
   dailyGroups: any[] = [];
-
+  rowsArray: number[] = [];
   filteredEmployees: any[] = [];
   showEmployeeDropdown = false;
   serviceForm!: FormGroup;
@@ -43,9 +43,7 @@ export class CutsComponent implements OnInit {
 
   getCuts() {
     this.spinnerToasterService.showSpinner()
-    const fullDate = new Date();
-    const date = `${fullDate.getFullYear()}-${String(fullDate.getMonth() + 1).padStart(2, '0')}-${String(fullDate.getDate()).padStart(2, '0')}`;
-    this.barberService.CutList(date).subscribe((res: any) => {this.allCuts = res.data; this.groupCutsByBarber(this.allCuts); this.spinnerToasterService.hideSpinner()});
+    this.barberService.CutList().subscribe((res: any) => {this.allCuts = res.data; this.groupCutsByBarber(this.allCuts); this.spinnerToasterService.hideSpinner()});
   }
 
   onEmployeeInput(event: any) {
@@ -157,21 +155,25 @@ export class CutsComponent implements OnInit {
         this.spinnerToasterService.hideSpinner();
       },
       error: (err) => {
+        this.spinnerToasterService.hideSpinner();
         this.spinnerToasterService.showToaster("error" ,'حدث خطأ أثناء حفظ العملية، حاول مرة أخرى');
         console.error(err);
       },
     });
   }
 
+  get maxCutsCount(): number {
+    return Math.max(...this.dailyGroups.map(e => e.cuts.length));
+  }
+
   groupCutsByBarber(apiResponse: any) {
     const employees = apiResponse.employees || [];
-    employees.forEach((emp: any) => {
-      if (emp.cuts) {
-        emp.cuts.sort((a: any, b: any) => 
-          new Date(b.time).getTime() - new Date(a.time).getTime()
-        );
-      }
-    });
     this.dailyGroups = employees;
+
+    // حساب أقصى عدد عمليات عند أي حلاق لتحديد عدد صفوف الجدول
+    const maxCuts = Math.max(...employees.map((e: any) => e.cuts?.length || 0), 0);
+    
+    // تحويل الرقم لمصفوفة [0, 1, 2, ...] عشان الـ @for يشتغل
+    this.rowsArray = Array.from({ length: maxCuts }, (_, i) => i);
   }
 }

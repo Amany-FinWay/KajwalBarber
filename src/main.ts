@@ -7,11 +7,14 @@ import { routes } from './app/app.routes';
 import { provideToastr } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
 
-import { inject, provideAppInitializer } from '@angular/core';
-
+import { inject, provideAppInitializer, LOCALE_ID } from '@angular/core';
+import localeAr from '@angular/common/locales/ar';
+import { registerLocaleData } from '@angular/common';
 import { ConfigService } from './app/core/services/config.service';
 import { apiBaseUrlInterceptor } from './app/core/interceptors/api-base-url.interceptor';
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
+
+registerLocaleData(localeAr);
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -27,5 +30,6 @@ bootstrapApplication(AppComponent, {
         const configService = inject(ConfigService);
         return configService.load();
     }),
+    { provide: LOCALE_ID, useValue: 'ar-EG' }
   ],
 }).catch(console.error);

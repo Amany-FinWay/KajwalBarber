@@ -84,60 +84,82 @@
         </form>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mt-12">
+<div class="overflow-x-auto mt-10 rounded-[2rem] border border-white/10 shadow-2xl" dir="rtl">
+  <table class="min-w-full text-sm text-center text-zinc-300">
+
+    <thead class="bg-zinc-900/90 backdrop-blur-md text-white">
+      <tr>
+        <th class="px-6 py-5 border-b border-white/10 text-right font-black text-yellow-500 bg-black/20">
+          البيانات
+        </th>
         @for (emp of dailyGroups; track emp.employeeId) {
-        <div
-            class="bg-zinc-900/40 backdrop-blur-xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all">
-    
-            <div class="p-6 bg-zinc-800/30 border-b border-white/5 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div
-                        class="w-12 h-12 bg-yellow-500/20 rounded-2xl flex items-center justify-center text-yellow-500 font-black text-xl">
-                        {{ emp.employeeName[0] }}
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-white leading-none">{{ emp.employeeName }}</h4>
-                        <span class="text-[10px] text-zinc-500 uppercase tracking-tighter">إجمالي: {{ emp.cuts?.length || 0
-                            }} زبائن</span>
-                    </div>
-                </div>
-                <div class="text-left">
-                    <p class="text-2xl font-black text-yellow-500">{{ emp.grossRevenue }}<span
-                            class="text-xs mr-1 text-zinc-400">ج.م</span></p>
-                    <p class="text-[9px] text-green-500/80 font-bold">صافي: {{ emp.netRevenue | number:'1.0-2' }}</p>
-                </div>
-            </div>
-    
-            <div class="p-6 space-y-6 relative">
-                <div
-                    class="absolute right-9 top-8 bottom-8 w-[1px] bg-gradient-to-b from-yellow-500/30 via-zinc-800 to-transparent">
-                </div>
-    
-                @for (cut of emp.cuts; track cut.cutId) {
-                <div class="relative pr-10 group">
-                    <div class="absolute right-[-4px] top-2 w-2 h-2 rounded-full bg-zinc-800 border border-yellow-500 z-10">
-                    </div>
-    
-                    <div
-                        class="flex justify-between items-center bg-zinc-800/20 p-4 rounded-2xl border border-transparent hover:border-white/5 hover:bg-zinc-800/40 transition-all">
-                        <div class="space-y-1">
-                            <p class="text-sm font-bold text-zinc-100">{{ cut.serviceName }}</p>
-                            <div class="flex items-center gap-2 text-[10px] text-zinc-500">
-                                <span class="material-icons text-[12px]">person</span>
-                                {{ cut.clientName || 'عميل مجهول' }}
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-black text-white">{{ cut.price }} ج.م</p>
-                            <p class="text-[9px] text-zinc-600">{{ cut.time | date:'hh:mm a' }}</p>
-                        </div>
-                    </div>
-                </div>
-                }
-            </div>
-        </div>
+          <th class="px-6 py-5 border-b border-white/10 font-black text-lg">
+            {{ emp.employeeName }}
+          </th>
         }
-    </div>
+      </tr>
+    </thead>
+
+    <tbody class="bg-zinc-800/20">
+      @for (rowIndex of rowsArray; track rowIndex) {
+        
+        <tr class="hover:bg-white/[0.02] transition-colors">
+          <td class="px-4 py-3 border-b border-white/5 text-right text-zinc-500 font-medium bg-black/10">
+            الخدمة ({{ rowIndex + 1 }})
+          </td>
+          @for (emp of dailyGroups; track emp.employeeId) {
+            <td class="px-4 py-3 border-b border-white/5 font-bold">
+              {{ emp.cuts[rowIndex]?.serviceName || '—' }}
+            </td>
+          }
+        </tr>
+
+        <tr class="hover:bg-white/[0.02] transition-colors">
+          <td class="px-4 py-3 border-b border-white/5 text-right text-zinc-500 bg-black/10">العميل</td>
+          @for (emp of dailyGroups; track emp.employeeId) {
+            <td class="px-4 py-3 border-b border-white/5 text-xs">
+              {{ emp.cuts[rowIndex]?.clientName || '—' }}
+            </td>
+          }
+        </tr>
+
+        <tr class="border-b-2 border-zinc-900 hover:bg-white/[0.02] transition-colors">
+          <td class="px-4 py-3 text-right text-zinc-500 bg-black/10">السعر / الوقت</td>
+          @for (emp of dailyGroups; track emp.employeeId) {
+            <td class="px-4 py-3">
+              @if (emp.cuts[rowIndex]) {
+                <div class="flex flex-col">
+                  <span class="text-white font-black text-base">{{ emp.cuts[rowIndex].price }} ج.م</span>
+                  <span class="text-[9px] text-zinc-600 uppercase">{{ emp.cuts[rowIndex].time | date:'hh:mm a' : '' : 'ar' }}</span>
+                </div>
+              } @else { — }
+            </td>
+          }
+        </tr>
+      }
+
+      <tr class="bg-yellow-500/10 border-t-4 border-yellow-500/20">
+        <td class="px-4 py-4 text-right font-black text-yellow-500 bg-black/20 text-base">إجمالي الدخل</td>
+        @for (emp of dailyGroups; track emp.employeeId) {
+          <td class="px-4 py-4 font-black text-xl text-yellow-500">
+            {{ emp.grossRevenue }}
+          </td>
+        }
+      </tr>
+
+      <tr class="bg-green-500/5">
+        <td class="px-4 py-4 text-right font-black text-green-500 bg-black/20">صافي الحلاق</td>
+        @for (emp of dailyGroups; track emp.employeeId) {
+          <td class="px-4 py-4 font-black text-xl text-green-500">
+            {{ emp.netRevenue | number:'1.0-0' }}
+          </td>
+        }
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
 
     <!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="bg-zinc-900/60 backdrop-blur-xl border border-white/5 rounded-[2.5rem] overflow-hidden">
