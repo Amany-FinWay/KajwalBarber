@@ -1,213 +1,81 @@
-<div class="space-y-10 mt-5" dir="rtl">
-
-    <div class="relative z-[200] bg-zinc-900/40 backdrop-blur-md border border-white/5 p-8 rounded-[2.5rem]">
-        <h3 class="text-xl font-bold text-yellow-500 mb-6 flex items-center gap-2">
-            <span class="material-icons">add_shopping_cart</span> إضافة عملية جديدة
-        </h3>
-        
-        <div class="relative">
-            <form [formGroup]="serviceForm" (ngSubmit)="onSubmitService()"
-                        class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end bg-zinc-900/40 p-6 rounded-[2rem] border border-white/5 shadow-2xl">
-            <div class="relative group">
-                <label
-                    class="text-[10px] text-zinc-500 mb-2 block mr-2 font-bold uppercase tracking-wider">الحلاق</label>
-                <div class="relative">
-                    <span
-                        class="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 text-sm">person</span>
-                    <input type="text" formControlName="employeeName"
-                        (input)="onEmployeeInput($event); onEmployeeInputChange()" placeholder="اسم الحلاق"
-                        class="w-full bg-zinc-800/50 border border-transparent focus:border-yellow-500/50 rounded-xl py-3 pr-10 pl-4 text-white outline-none transition-all">
-                </div>
-
-                @if (showEmployeeDropdown) {
-                    <ul class="absolute z-[999] w-full mt-2 bg-zinc-800 border border-white/10 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] max-h-40 overflow-auto scrollbar-hide">
-                        @for (emp of filteredEmployees; track emp.id) {
-                            <li (click)="selectEmployee(emp)"
-                                class="px-4 py-3 hover:bg-yellow-500 hover:text-black cursor-pointer text-sm transition-colors border-b border-white/5 last:border-0">
-                                {{ emp.name }}
-                            </li>
-                        }
-                    </ul>
+<div class="mt-10 overflow-x-auto" dir="rtl">
+    <table
+        class="min-w-full border border-white/10 bg-zinc-900/40 backdrop-blur-md rounded-2xl overflow-hidden text-center">
+        <thead class="bg-zinc-900/80 sticky top-0 z-10">
+            <tr>
+                <th class="px-3 py-3 text-sm text-zinc-400 border border-white/10">#</th>
+                    @for (emp of dailyGroups; track emp.employeeId) {
+                    <th class="px-4 py-3 text-sm font-bold text-yellow-500 border border-white/10">
+                        {{ emp.employeeName }}
+                    </th>
                 }
-            </div>
-
-            <div class="group">
-                <label class="text-[10px] text-zinc-500 mb-2 block mr-2 font-bold uppercase tracking-wider">نوع
-                    الخدمة</label>
-                <div class="relative">
-                    <span
-                        class="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 text-sm">content_cut</span>
-                    <input type="text" formControlName="serviceName" placeholder="شعر، دقن، ماسك..."
-                        class="w-full bg-zinc-800/50 border border-transparent focus:border-yellow-500/50 rounded-xl py-3 pr-10 pl-4 text-white outline-none transition-all">
-                </div>
-            </div>
-
-            <div class="group">
-                <label class="text-[10px] text-zinc-500 mb-2 block mr-2 font-bold uppercase tracking-wider">السعر
-                    (ج.م)</label>
-                <div class="relative">
-                    <span
-                        class="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 text-sm">payments</span>
-                    <input type="number" formControlName="price" placeholder="0.00"
-                        class="w-full bg-zinc-800/50 border border-transparent focus:border-yellow-500/50 rounded-xl py-3 pr-10 pl-4 text-white outline-none transition-all font-mono">
-                </div>
-            </div>
-
-            <div class="group">
-                <label class="text-[10px] text-zinc-500 mb-2 block mr-2 font-bold uppercase tracking-wider">اسم
-                    العميل</label>
-                <div class="relative">
-                    <span
-                        class="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-zinc-600 text-sm">badge</span>
-                    <input type="text" formControlName="clientName" placeholder="اختياري..."
-                        class="w-full bg-zinc-800/50 border border-transparent focus:border-yellow-500/50 rounded-xl py-3 pr-10 pl-4 text-white outline-none transition-all">
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-2">
-
-                @if (serviceForm.get('employeeId')?.value === 0 && serviceForm.get('employeeName')?.value) {
-                <div class="animate-fade-in">
-                    <label class="text-[10px] text-yellow-500 mr-2 mb-1 block">عمولة الحلاق الجديد %</label>
-                    <input type="number" formControlName="commission" placeholder="العمولة %"
-                        class="w-full bg-yellow-500/10 border border-yellow-500/30 rounded-xl py-2 px-4 text-yellow-500 outline-none">
-                </div>
+            </tr>
+        </thead>
+        <tbody>
+            @for (rowIndex of [].constructor(maxCutsCount); let i = $index; track i) {
+                <tr>
+                    <td class="px-3 py-2 text-xs text-zinc-500 border border-white/10">
+                        {{ i + 1 }}
+                    </td>
+                    @for (emp of dailyGroups; track emp.employeeId) {
+                        <td class="px-2 py-2 border border-white/10 text-sm">
+                            @if (emp.cuts[i]) {
+                                <span class="font-bold text-white">
+                                    {{ emp.cuts[i].price }} ج.م
+                                </span>
+                            } @else {
+                                <span class="text-zinc-700">—</span>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+            <tr class="bg-zinc-800/40">
+                <td class="px-3 py-2 text-xs text-zinc-400 border border-white/10">
+                    سجل جديد
+                </td>
+                    @for (emp of dailyGroups; track emp.employeeId; let col = $index) {
+                    <td class="px-2 py-2 border border-white/10">
+                        <input type="number"
+                            class="w-full bg-zinc-900/60 border border-white/10 rounded-lg px-2 py-1 text-white text-sm text-center outline-none focus:border-yellow-500"
+                            placeholder="اكتب هنا لتجسيل سجل جديد" [(ngModel)]="newRow[col]"
+                            (keydown.enter)="saveNewRow()" />
+                    </td>
                 }
+            </tr>
+            <tr class="bg-zinc-800/70 font-bold">
+                <td class="px-3 py-3 text-sm text-zinc-300 border border-white/10">
+                    الإجمالي
+                </td>
+                @for (emp of dailyGroups; track emp.employeeId) {
+                <td class="px-3 py-3 text-white border border-white/10">
+                    {{ emp.grossRevenue | number:'1.0-0' }} ج.م
+                </td>
+                }
+            </tr>
+            <tr class="bg-zinc-800/40">
+                <td class="px-3 py-3 text-sm text-yellow-500 border border-white/10">
+                    نصيب الحلاق
+                </td>
 
-                <button type="submit" [disabled]="serviceForm.invalid"
-                    class="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-black py-3 rounded-xl transition-all shadow-lg shadow-yellow-500/20 active:scale-95 disabled:opacity-30 flex items-center justify-center gap-2">
-                    <span class="material-icons">save</span>
-                    حفظ العملية
-                </button>
-            </div>
-        </form>
-        </div>
+                @for (emp of dailyGroups; track emp.employeeId) {
+                    <td class="px-3 py-3 text-yellow-500 border border-white/10">
+                        {{ emp.commissionAmount | number:'1.0-0' }} ج.م
+                    </td>
+                }
+            </tr>
+            <tr class="bg-zinc-800/30">
+                <td class="px-3 py-3 text-sm text-green-500 border border-white/10">
+                    نصيب المحل
+                </td>
+                @for (emp of dailyGroups; track emp.employeeId) {
+                    <td class="px-3 py-3 text-green-500 border border-white/10">
+                        {{ emp.netRevenue | number:'1.0-0' }} ج.م
+                    </td>
+                }
+            </tr>
 
-    </div>
+        </tbody>
+    </table>
 
-<div class="relative z-0 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 items-start mt-10" dir="rtl">
-  @for (emp of dailyGroups; track emp.employeeId) {
-    <div class="bg-zinc-900/40 backdrop-blur-md rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl flex flex-col transition-all h-fit">
-      
-      <div (click)="toggleCard(emp.employeeId)" 
-           class="card-header-fixed p-6 bg-gradient-to-br from-zinc-800 to-zinc-900 border-b border-white/5 relative cursor-pointer active:scale-95 transition-transform flex-none">
-        
-        <div class="relative z-10 flex justify-between items-start">
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-yellow-500 rounded-2xl flex items-center justify-center text-black font-black text-xl">
-              {{ emp.employeeName[0] }}
-            </div>
-            <div>
-              <h4 class="font-bold text-white text-lg">{{ emp.employeeName }}</h4>
-              <p class="text-[10px] text-zinc-500 uppercase">حلاق محترف</p>
-            </div>
-          </div>
-          
-          <span class="material-icons text-zinc-600 transition-transform duration-300"
-                [style.transform]="isOpened(emp.employeeId) ? 'rotate(180deg)' : 'rotate(0deg)'">
-            {{ isOpened(emp.employeeId) ? 'expand_less' : 'expand_more' }}
-          </span>
-        </div>
-
-        <div class="relative z-10 grid grid-cols-3 gap-3 mt-6">
-        
-        <div class="bg-black/30 p-2.5 rounded-2xl border border-white/5 text-center">
-            <p class="text-[9px] text-zinc-500 mb-1">الإجمالي</p>
-            <p class="text-lg font-black text-white">
-            {{ emp.grossRevenue | number:'1.0-0' }}
-            </p>
-        </div>
-
-        <div class="bg-black/30 p-2.5 rounded-2xl border border-white/5 text-center">
-            <p class="text-[9px] text-zinc-500 mb-1">نصيب الحلاق</p>
-            <p class="text-lg font-black text-yellow-500">
-            {{ emp.commissionAmount | number:'1.0-2' }}
-            </p>
-        </div>
-
-        <div class="bg-black/30 p-2.5 rounded-2xl border border-white/5 text-center">
-            <p class="text-[9px] text-zinc-500 mb-1">نصيب المحل</p>
-            <p class="text-lg font-black text-green-500">
-            {{ emp.netRevenue | number:'1.0-2' }}
-            </p>
-        </div>
-
-        </div>
-      </div>
-
-@if (isOpened(emp.employeeId)) {
-
-        <div class="p-4 space-y-3 flex-grow overflow-y-auto max-h-[400px] animate-fade-down animate-duration-200 scrollbar-hide">
-
-            @for (cut of emp.cuts; track cut.cutId) {
-            <div class="bg-zinc-800/40 border border-white/[0.05] p-4 rounded-[1.5rem] flex justify-between items-center group/cut relative overflow-hidden">
-                
-                <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center text-yellow-500">
-                    <span class="material-icons text-sm">content_cut</span>
-                </div>
-                <div>
-                    <p class="text-sm font-bold text-zinc-200">{{ cut.serviceName }}</p>
-                    <p class="text-[10px] text-zinc-500">{{ cut.clientName || 'بدون اسم' }}</p>
-                </div>
-                </div>
-
-                <div class="flex items-center gap-4">
-                <button (click)="deleteCut(cut.cutId)" 
-                        class="opacity-0 group-hover/cut:opacity-100 p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all duration-200"
-                        title="حذف العملية">
-                    <span class="material-icons">delete_outline</span>
-                </button>
-
-                <div class="text-left">
-                    <p class="text-sm font-black text-white">{{ cut.price }} ج.م</p>
-                    <p class="text-[9px] text-zinc-600 lowercase">{{ cut.time | date:'hh:mm a' : '' : 'ar' }}</p>
-                </div>
-                </div>
-            </div>
-            } @empty {
-
-             <div class="py-8 text-center text-zinc-600 text-sm italic">لا توجد عمليات مسجلة اليوم</div>
-
-          }
-
-        </div>
-
-      }
-    </div>
-  }
-</div>
-
-
-    <!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="bg-zinc-900/60 backdrop-blur-xl border border-white/5 rounded-[2.5rem] overflow-hidden">
-            <div class="p-6 bg-yellow-500/10 border-b border-white/5 flex justify-between items-center">
-                <h4 class="font-bold text-lg text-white">أحمد علي</h4>
-                <span class="text-yellow-500 font-bold">إجمالي اليوم: 150 ج.م</span>
-            </div>
-            <div class="p-4 space-y-3">
-                <div
-                    class="flex justify-between items-center bg-zinc-800/40 p-4 rounded-2xl hover:bg-zinc-800 transition">
-                    <div class="flex items-center gap-3">
-                        <span class="material-icons text-zinc-500">face</span>
-                        <div>
-                            <p class="text-sm font-bold">شعر ودقن</p>
-                            <p class="text-[10px] text-zinc-500">العميل: محمد عبدالله</p>
-                        </div>
-                    </div>
-                    <span class="font-black text-white text-lg">100 ج.م</span>
-                </div>
-                <div
-                    class="flex justify-between items-center bg-zinc-800/40 p-4 rounded-2xl hover:bg-zinc-800 transition">
-                    <div class="flex items-center gap-3">
-                        <span class="material-icons text-zinc-500">content_cut</span>
-                        <div>
-                            <p class="text-sm font-bold">حلاقة أطفال</p>
-                        </div>
-                    </div>
-                    <span class="font-black text-white text-lg">50 ج.م</span>
-                </div>
-            </div>
-        </div>
-    </div> -->
 </div>
