@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BarberService } from '../../core/services/barber.service';
@@ -15,6 +15,7 @@ import { SpinnerToasterService } from '../../core/services/spinner-toaster.servi
   styleUrl: './cuts.component.css',
 })
 export class CutsComponent implements OnInit {
+  @Output() dataChanged = new EventEmitter<void>();
   allBarbers: Barber[] = [];
   dailyGroups: any[] = [];
 
@@ -163,6 +164,7 @@ export class CutsComponent implements OnInit {
         );
         this.newRow = [];
         this.loadTodayCuts();
+        this.dataChanged.emit();
       })
       .catch(() => {
         this.spinnerToasterService.showToaster('error', 'حصل خطأ أثناء الحفظ');

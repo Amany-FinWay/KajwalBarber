@@ -32,3 +32,19 @@ export interface CutBarber {
   netRevenue: number;
   fixedAmount: number;
 }
+
+
+/* ============================ Create Response =========================== */
+export interface CutCreateResponse {
+  isValid: Boolean;
+  message: string;
+  data: ResponseData;
+}
+
+export interface ResponseData {
+  businessDate: Date;
+  employees: CutBarber[];
+  totalGrossRevenue: number;
+  totalCommission: number;
+  totalNetRevenue: number;
+}

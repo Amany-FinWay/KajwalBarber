@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Barber } from '../models/barber.model';
 import { Observable } from 'rxjs';
-import { CreateCut, CutsList } from '../models/cuts-list.model';
+import { CreateCut, CutCreateResponse, CutsList } from '../models/cuts-list.model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +26,8 @@ export class BarberService {
     return this.httpClient.post(`${'/api/employees/delete-'}${barberId}`, {});
   }
 
-  public CreateCut(cut: CreateCut) {
-    return this.httpClient.post('/api/cuts/create', cut);
+  public CreateCut(cut: CreateCut): Observable<CutCreateResponse> {
+    return this.httpClient.post<CutCreateResponse>('/api/cuts/create', cut);
   }
 
   public CutList(): Observable<CutsList>{

@@ -33,4 +33,22 @@ export class DashboardComponent implements OnInit {
       }
     })
   }
+
+  refreshStats() {
+    this.loadStats();
+  }
+
+  loadStats() {
+    this.analyticsService.Global().subscribe({
+      next: (res: any) => {
+        this.stats = res.data;
+        console.log('Stats updated:', this.stats);
+      },
+      error: (err) => {
+        if (err.status == 401) {
+          this.router.navigate(['/login']);
+        }
+      }
+    });
+  }
 }
